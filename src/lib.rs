@@ -1,6 +1,9 @@
 extern crate log;
 mod core_clr;
-pub use core_clr::CoreClr;
+pub use core_clr::{
+    CoreClrError,
+    CoreClr
+};
 
 
 #[cfg(test)]
@@ -10,7 +13,7 @@ mod tests {
     use std::ffi::CString;
     use std::os::raw::c_char;
 
-    unsafe extern "system" fn progress(p: i32) -> i32
+    unsafe extern "C" fn progress(p: i32) -> i32
     {
         println!("ping: {}", p);
         -p
@@ -26,8 +29,8 @@ mod tests {
         assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "SampleHost").is_ok(), true);
 
         // Call the test work.
-        type ReportCallback = unsafe extern "system" fn(i32) -> i32;
-        type DoWork = unsafe extern "system" fn(
+        type ReportCallback = unsafe extern "C" fn(i32) -> i32;
+        type DoWork = unsafe extern "C" fn(
             * const c_char,
             i32,
             i32,
