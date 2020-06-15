@@ -4,11 +4,11 @@ use std::os::raw::{c_void, c_char};
 pub(crate) type HRESULT = i32;
 
 // Name of the initialize function to search for.
-pub(crate) const CLR_INITIALIZE: &[u8; 19]= &b"coreclr_initialize\0";
+pub(crate) const CLR_INITIALIZE: &[u8] = b"coreclr_initialize\0";
 // Name of the shutdown function to search for.
-pub(crate) const CLR_SHUTDOWN: &[u8; 24]= &b"coreclr_create_delegate\0";
+pub(crate) const CLR_SHUTDOWN: &[u8]= b"coreclr_shutdown\0";
 // Name of the create delegate function to search for.
-pub(crate) const CLR_CREATE_DELEGATE: &[u8; 17]= &b"coreclr_shutdown\0";
+pub(crate) const CLR_CREATE_DELEGATE: &[u8]= b"coreclr_create_delegate\0";
 
 /// The coreclr library initialization function.
 pub(crate) type ClrInitialize = unsafe extern "C" fn(
