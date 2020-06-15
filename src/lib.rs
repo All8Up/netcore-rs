@@ -1,7 +1,9 @@
-#[macro_use]
 extern crate log;
 mod core_clr;
-pub use core_clr::CoreClr;
+pub use core_clr::{
+    CoreClrError,
+    CoreClr
+};
 
 
 #[cfg(test)]
@@ -11,7 +13,7 @@ mod tests {
     use std::ffi::CString;
     use std::os::raw::c_char;
 
-    unsafe extern "system" fn progress(p: i32) -> i32
+    unsafe extern "C" fn progress(p: i32) -> i32
     {
         println!("ping: {}", p);
         -p
@@ -19,23 +21,29 @@ mod tests {
 
     #[test]
     fn basic_startup() {
-        let t0 = CoreClr::load_from(std::path::Path::new("./work"));
+        let t0 = CoreClr::load_from(std::path::Path::new("./tests/ManagedLibrary/deploy"));
         assert_ne!(t0.is_err(), true);
 
         let mut clr = t0.unwrap();
-        assert_eq!(clr.add_trusted_assemblies_from(std::path::Path::new("./work")).is_ok(), true);
-        assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "SampleHost"), true);
+        assert_eq!(clr.add_trusted_assemblies_from(std::path::Path::new("./tests/ManagedLibrary/deploy")).is_ok(), true);
+        assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "SampleHost").is_ok(), true);
 
         // Call the test work.
-        type ReportCallback = unsafe extern "system" fn(i32) -> i32;
-        type DoWork = unsafe extern "system" fn(
+        type ReportCallback = unsafe extern "C" fn(i32) -> i32;
+        type DoWork = unsafe extern "C" fn(
             * const c_char,
             i32,
             i32,
             * const f64,
             ReportCallback
         ) -> * mut c_char;
-        let ptr = clr.create_delegate().unwrap();
+        let ptr = clr.create_delegate(
+            "ManagedLibrary",
+            "1.0.0.0",
+            "ManagedLibrary",
+            "ManagedWorker",
+            "DoWork"
+        ).unwrap();
         println!("------------: {:?}", ptr);
         let do_work: DoWork = unsafe { std::mem::transmute::<* const c_void, DoWork>(ptr) };
 
