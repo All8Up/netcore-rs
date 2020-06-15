@@ -48,7 +48,8 @@ impl CoreClr
     /// Load the coreclr library found in the given path.
     pub fn load_from(path: &Path) -> Result<CoreClr>
     {
-        let path_lib = path.join("coreclr.dll");
+        let path_lib = path.join("coreclr.dll").canonicalize().unwrap();
+        println!("{:?}", path_lib);
         let library = libloading::Library::new(path_lib)?;
 
         Ok(CoreClr {
