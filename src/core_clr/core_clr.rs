@@ -146,6 +146,9 @@ impl CoreClr
     }
 
     /// Create a delegate from the loaded assemblies.
+    /// TODO: Should be a generic that takes the fn signature, but I can't
+    /// quite figure out how to constrain it properly so I can perform the
+    /// transform.
     pub fn create_delegate(
         &self,
         lib_name: &str,
@@ -180,7 +183,7 @@ impl CoreClr
             return Ok(fn_ptr);
         }
 
-        // TODO: If there are any hresult's that can be returned,
+        // TODO: If there are any hresult errors that can be returned,
         // break them down in the result.
         Err(CoreClrError::NotFound)
     }
