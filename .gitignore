@@ -1,3 +1,6 @@
 /target
 Cargo.lock
 /work
+/tests/ManagedLibrary/obj
+/tests/ManagedLibrary/bin
+/tests/ManagedLibrary/deploy

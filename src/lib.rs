@@ -21,11 +21,11 @@ mod tests {
 
     #[test]
     fn basic_startup() {
-        let t0 = CoreClr::load_from(std::path::Path::new("./work"));
+        let t0 = CoreClr::load_from(std::path::Path::new("./tests/ManagedLibrary/deploy"));
         assert_ne!(t0.is_err(), true);
 
         let mut clr = t0.unwrap();
-        assert_eq!(clr.add_trusted_assemblies_from(std::path::Path::new("./work")).is_ok(), true);
+        assert_eq!(clr.add_trusted_assemblies_from(std::path::Path::new("./tests/ManagedLibrary/deploy")).is_ok(), true);
         assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "SampleHost").is_ok(), true);
 
         // Call the test work.
