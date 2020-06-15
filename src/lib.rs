@@ -1,4 +1,3 @@
-#[macro_use]
 extern crate log;
 mod core_clr;
 pub use core_clr::CoreClr;
@@ -24,7 +23,7 @@ mod tests {
 
         let mut clr = t0.unwrap();
         assert_eq!(clr.add_trusted_assemblies_from(std::path::Path::new("./work")).is_ok(), true);
-        assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "SampleHost"), true);
+        assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "SampleHost").is_ok(), true);
 
         // Call the test work.
         type ReportCallback = unsafe extern "system" fn(i32) -> i32;
@@ -35,7 +34,13 @@ mod tests {
             * const f64,
             ReportCallback
         ) -> * mut c_char;
-        let ptr = clr.create_delegate().unwrap();
+        let ptr = clr.create_delegate(
+            "ManagedLibrary",
+            "1.0.0.0",
+            "ManagedLibrary",
+            "ManagedWorker",
+            "DoWork"
+        ).unwrap();
         println!("------------: {:?}", ptr);
         let do_work: DoWork = unsafe { std::mem::transmute::<* const c_void, DoWork>(ptr) };
 
