@@ -1,5 +1,3 @@
-//! Manage loading and unloading of the libcoreclr dynamic library.
-extern crate libloading;
 extern crate thiserror;
 use thiserror::Error;
 
@@ -15,7 +13,11 @@ pub enum CoreClrError
     #[error("Ffi calling error.")]
     FfiError(std::ffi::NulError),
     #[error("Failure to initialize CoreClr.")]
-    InitializationFailure
+    InitializationFailure,
+    #[error("Invalid path result.")]
+    PathError(String),
+    #[error("Pattern error.")]
+    PatternError(glob::PatternError)
 }
 
 impl From<std::ffi::NulError> for CoreClrError
@@ -42,10 +44,10 @@ impl From<std::io::Error> for CoreClrError
     }
 }
 
-pub type Result<T> = std::result::Result<T, CoreClrError>;
-
-mod core_types;
-pub(crate) use core_types::*;
-
-mod core_clr;
-pub use core_clr::CoreClr;
+impl From<glob::PatternError> for CoreClrError
+{
+    fn from(error: glob::PatternError) -> CoreClrError
+    {
+        CoreClrError::PatternError(error)
+    }
+}

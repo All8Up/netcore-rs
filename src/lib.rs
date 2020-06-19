@@ -1,9 +1,20 @@
+//! Manage loading and unloading of the libcoreclr dynamic library.
 extern crate log;
+extern crate libloading;
+
+mod error;
+pub use error::CoreClrError as Error;
+
+pub type Result<T> = std::result::Result<T, Error>;
+
+mod types;
+pub(crate) use types::*;
+
+mod assemblies;
+pub use assemblies::Assemblies;
+
 mod core_clr;
-pub use core_clr::{
-    CoreClrError,
-    CoreClr
-};
+pub use core_clr::CoreClr;
 
 
 #[cfg(test)]
@@ -12,6 +23,7 @@ mod tests {
     use std::ffi::c_void;
     use std::ffi::CString;
     use std::os::raw::c_char;
+    use std::path::Path;
 
     unsafe extern "C" fn progress(p: i32) -> i32
     {
@@ -25,8 +37,10 @@ mod tests {
         assert_ne!(t0.is_err(), true);
 
         let mut clr = t0.unwrap();
-        assert_eq!(clr.add_trusted_assemblies_from(std::path::Path::new("./tests/ManagedLibrary/deploy")).is_ok(), true);
-        assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "SampleHost").is_ok(), true);
+
+        let mut assemblies = Assemblies::new();
+        let _ = assemblies.add(Path::new("./tests/ManagedLibrary/deploy"), &format!("*.{}", Assemblies::LIBRARY_EXT));
+        assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "SampleHost", &assemblies).is_ok(), true);
 
         // Call the test work.
         type ReportCallback = unsafe extern "C" fn(i32) -> i32;
