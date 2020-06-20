@@ -10,8 +10,14 @@ pub type Result<T> = std::result::Result<T, Error>;
 mod types;
 pub(crate) use types::*;
 
+mod paths;
+pub use paths::Paths;
+
 mod assemblies;
 pub use assemblies::Assemblies;
+
+mod properties;
+pub use properties::Properties;
 
 mod core_clr;
 pub use core_clr::CoreClr;
@@ -38,9 +44,9 @@ mod tests {
 
         let mut clr = t0.unwrap();
 
-        let mut assemblies = Assemblies::new();
-        let _ = assemblies.add(Path::new("./tests/ManagedLibrary/deploy"), &format!("*.{}", Assemblies::LIBRARY_EXT));
-        assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "SampleHost", &assemblies).is_ok(), true);
+        let mut properties = Properties::new();
+        let _ = properties.trusted().add(Path::new("./tests/ManagedLibrary/deploy"), &format!("*.{}", Assemblies::LIBRARY_EXT));
+        assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "SampleHost", &properties).is_ok(), true);
 
         // Call the test work.
         type ReportCallback = unsafe extern "C" fn(i32) -> i32;

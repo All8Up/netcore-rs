@@ -36,6 +36,11 @@ impl Assemblies
         }
     }
 
+    pub fn is_empty(&self) -> bool
+    {
+        self.assemblies.is_empty()
+    }
+
     /// Add all assemblies which are found on the path with the given pattern.
     pub fn add(&mut self, path: &Path, pattern: &str) -> Result<()>
     {

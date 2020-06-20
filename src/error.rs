@@ -6,6 +6,10 @@ pub enum CoreClrError
 {
     #[error("Not found.")]
     NotFound,
+    #[error("Duplicate.")]
+    Duplicate,
+    #[error("Not a directory.")]
+    NotADirectory,
     #[error("Load error.")]
     LibraryError(libloading::Error),
     #[error("Standard io error.")]

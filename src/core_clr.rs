@@ -3,12 +3,11 @@ use libloading::{Library, Symbol};
 use libloading::os::windows::Symbol as RawSymbol;
 use std::path::Path;
 use std::ffi::{CString, c_void};
-use std::os::raw::c_char;
 
 use crate::{
     Result,
     Error,
-    Assemblies,
+    Properties,
     ClrInitialize,
     ClrShutdown,
     ClrCreateDelegate,
@@ -77,30 +76,23 @@ impl CoreClr
     }
 
     /// Initialize the coreclr library.
-    pub fn initialize(&mut self, app_path: &Path, domain_name: &str, assemblies: &Assemblies) -> Result<()>
+    pub fn initialize(&mut self, app_path: &Path, domain_name: &str, properties: &Properties) -> Result<()>
     {
-        // Build the keys.
-        // TODO: Make this generic with optional keys.
-        let prop_tpa = CString::new("TRUSTED_PLATFORM_ASSEMBLIES")?;
-        let prop_keys: [* const c_char; 1] = [prop_tpa.as_ptr()];
-
-        // Build out the values.
-        let tpa_string = assemblies.to_string();
-        let prop_tpa: CString = CString::new(tpa_string)?;
-        let prop_tpa_values: [* const c_char; 1] = [prop_tpa.as_ptr()];
-
         // Convert other parameters.
         let exe_path = CString::new(app_path.to_str().expect("Conversion error."))?;
         let friendly_name = CString::new(domain_name)?;
+
+        // Get the property strings.
+        let prop_cstrings = properties.to_cstrings();
 
         // And call out to the mess.
         unsafe {
             let result = (self.clr_initialize)(
                 exe_path.as_ptr(),
                 friendly_name.as_ptr(),
-                1,
-                prop_keys.as_ptr(),
-                prop_tpa_values.as_ptr(),
+                prop_cstrings.keys.len() as i32,
+                prop_cstrings.keys.as_ptr(),
+                prop_cstrings.values.as_ptr(),
                 &mut self.host_handle,
                 &mut self.domain_id
             );
