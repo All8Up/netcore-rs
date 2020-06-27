@@ -114,3 +114,17 @@ impl Properties
         result
     }
 }
+
+impl Default for Properties
+{
+    fn default() -> Self
+    {
+        Properties {
+            trusted: Assemblies::new(),
+            app: Paths::new(),
+            native: Paths::new(),
+            pinvoke: Paths::new(),
+            resource: Paths::new()
+        }
+    }
+}

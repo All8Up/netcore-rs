@@ -27,18 +27,24 @@ impl Paths
     {
         if path.is_dir()
         {
-            if self.paths.insert(path.canonicalize()?.to_path_buf())
+            if self.paths.insert(path.canonicalize()?)
             {
                 Ok(())
-            }
-            else
-            {
+            } else {
                 Err(Error::Duplicate)
             }
-        }
-        else
-        {
+        } else {
             Err(Error::NotADirectory)
+        }
+    }
+}
+
+impl Default for Paths
+{
+    fn default() -> Self
+    {
+        Paths {
+            paths: HashSet::new()
         }
     }
 }
@@ -55,8 +61,7 @@ impl ToString for Paths
                 result += ";";
             }
 
-            let s = p.to_str().unwrap();
-            result += &format!("{}", s);
+            result += p.to_str().unwrap();
         }
         result
     }
