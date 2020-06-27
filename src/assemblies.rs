@@ -26,7 +26,7 @@ pub struct Assemblies
 
 impl Assemblies
 {
-    pub const LIBRARY_EXT: &'static str = LIB_EXT;
+    pub const EXTENSION: &'static str = LIB_EXT;
 
     /// New up an empty assembly container.
     pub fn new() -> Self

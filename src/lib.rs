@@ -39,13 +39,14 @@ mod tests {
 
     #[test]
     fn basic_startup() {
-        let t0 = CoreClr::load_from(std::path::Path::new("./tests/ManagedLibrary/deploy"));
-        assert_ne!(t0.is_err(), true);
+        // Load the core clr library from the given path.
+        let mut clr = CoreClr::load_from(std::path::Path::new("./tests/ManagedLibrary/deploy"))
+            .expect("Coreclr failed to load.");
 
-        let mut clr = t0.unwrap();
-
+        // Create the properties for this instance.
         let mut properties = Properties::new();
-        let _ = properties.trusted().add(Path::new("./tests/ManagedLibrary/deploy"), &format!("*.{}", Assemblies::LIBRARY_EXT));
+        let _ = properties.trusted()
+            .add(Path::new("./tests/ManagedLibrary/deploy"), &format!("*.{}", Assemblies::EXTENSION));
         assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "SampleHost", &properties).is_ok(), true);
 
         // Call the test work.
