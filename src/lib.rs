@@ -1,7 +1,4 @@
 //! Manage loading and unloading of the libcoreclr dynamic library.
-extern crate log;
-extern crate libloading;
-
 mod error;
 pub use error::CoreClrError as Error;
 

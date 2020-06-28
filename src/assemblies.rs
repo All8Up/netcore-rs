@@ -1,5 +1,4 @@
 //! Search for and manage the assemblies given to CoreClr.
-extern crate glob;
 use glob::glob;
 use std::path::{Path, PathBuf};
 use crate::{Error, Result};
