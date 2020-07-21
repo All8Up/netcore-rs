@@ -71,4 +71,32 @@ mod tests {
         let result = unsafe { (do_work)(name.as_ptr(), 5, 5, data.as_ptr(), progress) };
         println!("** result: {:?}", result);
     }
+
+    #[test]
+    fn gui_app() {
+        // Load the core clr library from the given path.
+        let mut clr = CoreClr::load_from(std::path::Path::new("./tests/Avalonia/deploy"))
+            .expect("Coreclr failed to load.");
+
+        // Create the properties for this instance.
+        let mut properties = Properties::new();
+        let _ = properties.trusted()
+            .add(Path::new("./tests/Avalonia/deploy"), &format!("*.{}", Assemblies::EXTENSION));
+        assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "Avalonia", &properties).is_ok(), true);
+
+        // Call the test work.
+        type Start = unsafe extern "C" fn(* mut c_void);
+        let ptr = clr.create_delegate(
+            "AvaloniaTestApp",
+            "1.0.0.0",
+            "AvaloniaTestApp",
+            "Program",
+            "Main"
+        ).unwrap();
+        println!("------------: {:?}", ptr);
+        let start: Start = unsafe { std::mem::transmute::<* const c_void, Start>(ptr) };
+
+        assert_ne!(ptr, std::ptr::null());
+        unsafe { (start)(std::ptr::null_mut()) };
+    }
 }

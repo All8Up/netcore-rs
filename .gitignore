@@ -4,3 +4,6 @@ Cargo.lock
 /tests/ManagedLibrary/obj
 /tests/ManagedLibrary/bin
 /tests/ManagedLibrary/deploy
+/tests/Avalonia/obj
+/tests/Avalonia/bin
+/tests/Avalonia/deploy
