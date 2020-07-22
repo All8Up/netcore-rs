@@ -3,6 +3,7 @@ use libloading::{Library, Symbol};
 use libloading::os::windows::Symbol as RawSymbol;
 use std::path::Path;
 use std::ffi::{CString, c_void};
+use log::{info};
 
 use crate::{
     Result,
@@ -155,5 +156,8 @@ impl Drop for CoreClr
     {
         // Make sure this happens before the library is dropped.
         let _result = unsafe { (self.clr_shutdown)(self.host_handle, self.domain_id) };
+
+        // Force the library drop.
+        unsafe { std::ptr::drop_in_place(&mut self.library) };
     }
 }

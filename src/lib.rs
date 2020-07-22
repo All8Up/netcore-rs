@@ -19,7 +19,6 @@ pub use properties::Properties;
 mod core_clr;
 pub use core_clr::CoreClr;
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -36,6 +35,8 @@ mod tests {
 
     #[test]
     fn basic_startup() {
+        pretty_env_logger::init();
+
         // Load the core clr library from the given path.
         let mut clr = CoreClr::load_from(std::path::Path::new("./tests/ManagedLibrary/deploy"))
             .expect("Coreclr failed to load.");
@@ -85,7 +86,7 @@ mod tests {
         assert_eq!(clr.initialize(&std::env::current_dir().unwrap(), "Avalonia", &properties).is_ok(), true);
 
         // Call the test work.
-        type Start = unsafe extern "C" fn(* mut c_void);
+        type Start = unsafe extern "C" fn();
         let ptr = clr.create_delegate(
             "AvaloniaTestApp",
             "1.0.0.0",
@@ -97,6 +98,6 @@ mod tests {
         let start: Start = unsafe { std::mem::transmute::<* const c_void, Start>(ptr) };
 
         assert_ne!(ptr, std::ptr::null());
-        unsafe { (start)(std::ptr::null_mut()) };
+        unsafe { (start)() };
     }
 }

@@ -7,3 +7,6 @@ Cargo.lock
 /tests/Avalonia/obj
 /tests/Avalonia/bin
 /tests/Avalonia/deploy
+/tests/TestGUI/obj
+/tests/TestGUI/bin
+/tests/TestGUI/deploy
